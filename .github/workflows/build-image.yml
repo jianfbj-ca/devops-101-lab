@@ -8,8 +8,12 @@ jobs:
         uses: actions/checkout@v4
 
       - name: Build Docker Image
+        # 解释： 使用标准Docker命令构建镜像，标签设为my-python-app
+        run: docker build -t my-python-app .
+
+      - name: Test Running Container      
         # 解释： 尝试启动刚才造好的镜像，并在后台运行 （-d）
-        run:
+        run: |
           docker run -d --name test-container -p 5000:5000 my-python-app
-          sleep 5
-          curl http://localhost:5000   # 等5秒访问这个网页，看输出是否正确
+          sleep 5 # 等5秒让程序启动
+          curl http://localhost:5000   # 访问这个网页，看输出是否正确
