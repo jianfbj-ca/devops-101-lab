@@ -1,0 +1,21 @@
+name: The first DevOps Pipeline
+#触发条件： 当有代码push到仓库时触发
+on: [push]
+jobs:
+  #定义一个叫build-and-test的任务
+  build-and-test:
+    #运行环境：告诉GitHub分配一台安装了Ubuntu的虚拟机给我用
+    runs-on: ubuntu-latest
+    steps:
+      #步骤1：拉取代码
+      - name: Checkout Repository Code
+        uses: actions/checkout@v4
+        # 解释： 这是GitHub官方提供的插件，作用是把仓库里的代码克隆到这台临时虚拟机里
+      #步骤2：打印一条欢迎信息
+      - name: Say Hello to Vancouver Tech
+        run: echo "Hello! 正在VM1之外的GitHub托管环境中运行CI任务。"
+        # 解释：run后面跟着的就是标准的Linux命令。
+      #步骤3：模拟一个简单的环境检查
+      - name: Check Docker Version
+        run: docker --version
+        #解释： 验证这台临时虚拟机里是否已经预装了Docker （GitHub的环境通常自带常用工具）
