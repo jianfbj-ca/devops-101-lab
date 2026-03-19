@@ -28,7 +28,7 @@ jobs:
           ECR_REGISTRY: ${{ steps.login-ecr.outputs.registry }}
           ECR_REPOSITORY: my-python-app
           IMAGE_TAG: latest
-        run:
+        run: |
           docker build -t $ECR_REGISTRY/$ECR_REPOSITORY:IMAGE_TAG .
           docker push $ECR_REGISTRY/$ECR_REPOSITORY:IMAGE_TAG
         #解释： docker build:根据Dockerfile造出镜像；docker push: 把镜像推送到AWS仓库
