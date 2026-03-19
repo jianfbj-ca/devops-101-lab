@@ -1,19 +1,34 @@
-name: Build Python Docker Image
-on: [push]
+name: Build and push to AWS ECR
+on:
+  push:
+    branches: ["main"] #仅在推送到主分支时触发
 jobs:
-  build:
+  deploy:
     runs-on: ubuntu-latest
     steps:
-      - name: Checkout code
+      - name: Checkout
         uses: actions/checkout@v4
-
-      - name: Build Docker Image
-        # 解释： 使用标准Docker命令构建镜像，标签设为my-python-app
-        run: docker build -t my-python-app .
-
-      - name: Test Running Container      
-        # 解释： 尝试启动刚才造好的镜像，并在后台运行 （-d）
-        run: |
-          docker run -d --name test-container -p 5000:5000 my-python-app
-          sleep 5 # 等5秒让程序启动
-          curl http://localhost:5000   # 访问这个网页，看输出是否正确
+      # 步骤一：配置AWS凭证
+      - name: Configure AWS Credentials
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-region: ${{ secrets.AWS_REGION }}
+        # 解释：使用在GitHub Secrets中存的钥匙登录AWS
+      
+      # 步骤二：登录AWS ECR
+      - name: Login to AWS ECR      
+        id: login-ecr
+        uses: aws-actions/amazon-ecr-login@v2
+        # 解释： 获取临时的Docker登录令牌，允许推送镜像
+      # 步骤三：构建、打标签并推送镜像
+      - name: Build, tag, and push image to AWS ECR
+        env:
+          ECR_REGISTRY: ${{ steps.login-ecr.outputs.registry }}
+          ECR_REPOSITORY: my-python-app
+          IMAGE_TAG: latest
+        run:
+          docker build -t $ECR_REGISTRY/$ECR_REPOSITORY:IMAGE_TAG .
+          docker push $ECR_REGISTRY/$ECR_REPOSITORY:IMAGE_TAG
+        #解释： docker build:根据Dockerfile造出镜像；docker push: 把镜像推送到AWS仓库
