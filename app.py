@@ -6,7 +6,7 @@ app = Flask(__name__)
 @app.route('/')
 def hello():
   #获取系统环境信息，证明这是在Docker里运行
-  return "<h1>>Success! The first Automated CI/CD Pipeline is LIVE!</h1><p>Running through Docker Container and GitHub Actions!</p>"
+  return "<h1>Success! The first Automated CI/CD Pipeline is LIVE!</h1><p>Running through Docker Container and GitHub Actions!</p>"
 
 if __name__ == "__main__":
   #监听所有IP的5000端口
