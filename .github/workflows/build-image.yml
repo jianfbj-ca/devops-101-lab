@@ -32,3 +32,23 @@ jobs:
           docker build -t $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG .
           docker push $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG
         #解释： docker build:根据Dockerfile造出镜像；docker push: 把镜像推送到AWS仓库
+
+      #步骤四：远程登录VM2并部署应用
+      - name: Deploy to VM2 via SSH
+        uses: appleboy/ssh-action@v1.0.3
+        with:
+          host: ${{ secrets.VM2_IP }}
+          username: ${{ secrets.VM2_USER }}
+          key: ${{ secrets.VM2_SSH_KEY }}
+          script: |
+            # 1. 登录 AWS ECR (这一步需要 VM 2 也有 AWS 凭证，或者我们通过环境变量传递)
+            # 为了简单演示，VM 2 已经通过之前的实验安装了 AWS CLI 并配置了权限
+            # 现在可以直接运行：
+            docker pull ${{ steps.login-ecr.outputs.registry }}/my-python-app:latest
+            
+            # 2. 停止并删除旧容器
+            docker stop my-python-app || true
+            docker rm my-python-app || true
+            
+            # 3. 运行新容器
+            docker run -d --name my-python-app -p 5000:5000 ${{ steps.login-ecr.outputs.registry }}/my-python-app:latest 
