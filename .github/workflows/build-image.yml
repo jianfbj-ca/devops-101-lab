@@ -23,7 +23,7 @@ jobs:
         uses: aws-actions/amazon-ecr-login@v2
         # 解释： 获取临时的Docker登录令牌，允许推送镜像
         
-      # 增加Linting/Testing步骤防止代码错误：
+      # 防止错误代码上线，增加两道防线，增加Linting/Testing步骤防止代码错误
       - name: Python Syntax Check (Lint)
         run: |
           pip install flake8
@@ -61,7 +61,7 @@ jobs:
             
             # 3. 运行新容器
             docker run -d --name my-python-app -p 5000:5000 ${{ steps.login-ecr.outputs.registry }}/my-python-app:latest
-            sleep 5
+            sleep 5 #防止错误代码上线，增加两道防线，增加健康检查（Health Check）
             if [ "$(docker inspect -f '{{.State.Running}}' my-app)" == "false" ]; then
               echo "容器启动失败，正在查看日志..."
               docker logs my-app
