@@ -24,10 +24,10 @@ jobs:
         # 解释： 获取临时的Docker登录令牌，允许推送镜像
         
       # 防止错误代码上线，增加两道防线，增加Linting/Testing步骤防止代码错误
-      #- name: Python Syntax Check (Lint)
-      #  run: |
-      #    pip install flake8
-      #    python3 -m py_compile app.py
+      - name: Python Syntax Check (Lint)
+        run: |
+          pip install flake8
+          python3 -m py_compile app.py
         # 解释：py_compile 会尝试编译 python 文件。
         # 如果有语法错误，这一步会报错，流水线变红并直接停止，错误镜像就不会推送到 AWS。
       
