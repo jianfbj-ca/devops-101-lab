@@ -61,9 +61,10 @@ jobs:
             
             # 3. 运行新容器
             docker run -d --name my-python-app -p 5000:5000 ${{ steps.login-ecr.outputs.registry }}/my-python-app:latest
-            sleep 5 #防止错误代码上线，增加两道防线，增加健康检查（Health Check）
-            if [ "$(docker inspect -f '{{.State.Running}}' my-app)" == "false" ]; then
+            sleep 5 
+            #防止错误代码上线，增加两道防线，增加健康检查（Health Check）
+            if [ "$(docker inspect -f '{{.State.Running}}' my-python-app)" == "false" ]; then
               echo "容器启动失败，正在查看日志..."
-              docker logs my-app
+              docker logs my-python-app
               exit 1
             fi
