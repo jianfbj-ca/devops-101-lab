@@ -22,6 +22,15 @@ jobs:
         id: login-ecr
         uses: aws-actions/amazon-ecr-login@v2
         # 解释： 获取临时的Docker登录令牌，允许推送镜像
+        
+      # 增加Linting/Testing步骤防止代码错误：
+      - name: Python Syntax Check (Lint)
+        run: |
+          pip install flake8
+          python3 -m py_compile app.py
+        # 解释：py_compile 会尝试编译 python 文件。
+        # 如果有语法错误，这一步会报错，流水线变红并直接停止，错误镜像就不会推送到 AWS。
+      
       # 步骤三：构建、打标签并推送镜像
       - name: Build, tag, and push image to AWS ECR
         env:
